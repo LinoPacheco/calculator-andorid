@@ -5,13 +5,14 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var displayTextView: TextView
     private var currentNumber = StringBuilder()
-    private var currentOperator = ""
-    private var previousValue = 0.0
+    private var operatorList = mutableListOf<Pair<String, Double>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,68 +62,71 @@ class MainActivity : AppCompatActivity() {
 
         // Listener para o botão de limpar (Clear)
         btnClear.setOnClickListener {
-            clearCalculator()
+            currentNumber.clear()
+            operatorList.clear()
+            updateDisplay()
         }
 
         // Listener para o botão de igual (=)
         btnEquals.setOnClickListener {
-            performCalculation()
-            currentOperator = ""
+            calculateResult()
         }
 
         // Listener para o botão de ponto decimal (.)
         btnDecimal.setOnClickListener {
-            addDecimalPoint()
+            if (!currentNumber.contains(".")) {
+                if (currentNumber.isEmpty()) {
+                    currentNumber.append("0.")
+                } else {
+                    currentNumber.append(".")
+                }
+                updateDisplay()
+            }
         }
     }
 
     private fun onOperatorButtonClick(operatorButton: Button) {
-        if (currentOperator.isNotEmpty()) {
-            performCalculation()
+        if (currentNumber.isNotEmpty()) {
+            val operator = operatorButton.text.toString()
+            val number = currentNumber.toString().toDouble()
+            operatorList.add(Pair(operator, number))
+            currentNumber.clear()
         }
-        currentOperator = operatorButton.text.toString()
-        previousValue = currentNumber.toString().toDouble()
-        currentNumber.clear()
     }
 
-    private fun performCalculation() {
-        if (currentOperator.isNotEmpty() && currentNumber.isNotEmpty()) {
-            val currentValue = currentNumber.toString().toDouble()
-            when (currentOperator) {
-                "+" -> previousValue += currentValue
-                "-" -> previousValue -= currentValue
-                "*" -> previousValue *= currentValue
-                "/" -> {
-                    if (currentValue != 0.0) {
-                        previousValue /= currentValue
-                    } else {
-                        displayTextView.text = "Error"
-                        return
+    private fun calculateResult() {
+        if (currentNumber.isNotEmpty()) {
+            operatorList.add(Pair("", currentNumber.toString().toDouble()))
+            currentNumber.clear()
+        }
+        if (operatorList.isNotEmpty()) {
+            var result = operatorList[0].second
+            for (i in 1 until operatorList.size) {
+                val operator = operatorList[i].first
+                val number = operatorList[i].second
+                when (operator) {
+                    "+" -> result += number
+                    "-" -> result -= number
+                    "*" -> result *= number
+                    "/" -> {
+                        if (number != 0.0) {
+                            result /= number
+                        } else {
+                            displayTextView.text = "Error"
+                            return
+                        }
                     }
                 }
             }
-            currentNumber.clear()
-            currentNumber.append(previousValue)
-            updateDisplay()
-        }
-    }
-
-    private fun addDecimalPoint() {
-        if (!currentNumber.contains(".")) {
-            if (currentNumber.isEmpty()) {
-                currentNumber.append("0.")
+            // Format the result to remove decimal if it's an integer value
+            val formattedResult = if (result % 1 == 0.0) {
+                result.toLong().toString()
             } else {
-                currentNumber.append(".")
+                result.toString()
             }
-            updateDisplay()
+            displayTextView.text = formattedResult
+            operatorList.clear()
         }
-    }
-
-    private fun clearCalculator() {
-        currentNumber.clear()
-        currentOperator = ""
-        previousValue = 0.0
-        updateDisplay()
     }
 
     private fun updateDisplay() {
