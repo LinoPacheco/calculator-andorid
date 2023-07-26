@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Handler
 import android.widget.ImageView
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var displayTextView: TextView
@@ -20,6 +19,19 @@ class MainActivity : AppCompatActivity() {
         R.drawable.image1,
         R.drawable.image2,
         R.drawable.image3,
+        R.drawable.image4,
+        R.drawable.image5,
+        R.drawable.image6,
+        R.drawable.image7,
+        R.drawable.image8,
+        R.drawable.image9,
+        R.drawable.image10,
+        R.drawable.image11,
+        R.drawable.image12,
+        R.drawable.image13,
+        R.drawable.image14,
+        R.drawable.image15
+
         // Adicione aqui os IDs das outras imagens (image4, image5, etc.)
     )
     private var currentImageIndex = 0
@@ -73,10 +85,7 @@ class MainActivity : AppCompatActivity() {
 
         // Listener para o botão de limpar (Clear)
         btnClear.setOnClickListener {
-            currentNumber.clear()
-            currentOperator = ""
-            previousValue = 0.0
-            updateDisplay()
+            clearCalculator()
         }
 
         // Listener para o botão de igual (=)
@@ -97,28 +106,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Iniciar o runnable para trocar as imagens a cada 2 segundos
+        // Iniciar o runnable para trocar as imagens a cada 5 segundos
         val handler = Handler()
         val imageChangeRunnable = object : Runnable {
             override fun run() {
                 currentImageIndex = (currentImageIndex + 1) % imageList.size
                 imageView.setImageResource(imageList[currentImageIndex])
-                handler.postDelayed(this, 5000) // Trocar a imagem a cada 2 segundos (2000 milissegundos)
+                handler.postDelayed(this, 5000) // Trocar a imagem a cada 5 segundos (5000 milissegundos)
             }
         }
-        handler.postDelayed(imageChangeRunnable, 5000) // Iniciar a troca das imagens após 2 segundos
+        handler.postDelayed(imageChangeRunnable, 5000) // Iniciar a troca das imagens após 5 segundos
     }
 
     private fun onOperatorButtonClick(operatorButton: Button) {
         if (currentNumber.isNotEmpty()) {
-            performCalculation()
+            if (previousValue == 0.0) {
+                previousValue = currentNumber.toString().toDouble()
+            } else {
+                performCalculation()
+            }
+            currentOperator = operatorButton.text.toString()
+            currentNumber.clear()
         }
-        currentOperator = operatorButton.text.toString()
-        currentNumber.clear()
     }
 
+
     private fun performCalculation() {
-        if (currentOperator.isNotEmpty() && currentNumber.isNotEmpty()) {
+        if (currentNumber.isNotEmpty()) {
             val currentValue = currentNumber.toString().toDouble()
             when (currentOperator) {
                 "+" -> previousValue += currentValue
@@ -147,6 +161,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDisplay() {
         displayTextView.text = currentNumber.toString()
+    }
+
+    private fun clearCalculator() {
+        currentNumber.clear()
+        currentOperator = ""
+        previousValue = 0.0
+        updateDisplay()
     }
 
     // Função de extensão para verificar se um Double é um número inteiro
