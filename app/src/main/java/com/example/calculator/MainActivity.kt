@@ -1,11 +1,11 @@
 package com.example.calculator
 
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import android.graphics.Color
+import android.os.Handler
+import android.widget.ImageView
 
 
 class MainActivity : AppCompatActivity() {
@@ -13,13 +13,23 @@ class MainActivity : AppCompatActivity() {
     private lateinit var displayTextView: TextView
     private var currentNumber = StringBuilder()
     private var currentOperator = ""
-    private var previousValue: Double? = null
+    private var previousValue = 0.0
+
+    private lateinit var imageView: ImageView
+    private val imageList = listOf(
+        R.drawable.image1,
+        R.drawable.image2,
+        R.drawable.image3,
+        // Adicione aqui os IDs das outras imagens (image4, image5, etc.)
+    )
+    private var currentImageIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         displayTextView = findViewById(R.id.displayTextView)
+        imageView = findViewById(R.id.imageView)
 
         val numberButtons = listOf<Button>(
             findViewById(R.id.btn0),
@@ -57,9 +67,7 @@ class MainActivity : AppCompatActivity() {
         // Definir os listeners para os botões de operadores
         operatorButtons.forEach { button ->
             button.setOnClickListener {
-                if (currentNumber.isNotEmpty()) {
-                    onOperatorButtonClick(button)
-                }
+                onOperatorButtonClick(button)
             }
         }
 
@@ -67,16 +75,14 @@ class MainActivity : AppCompatActivity() {
         btnClear.setOnClickListener {
             currentNumber.clear()
             currentOperator = ""
-            previousValue = null
+            previousValue = 0.0
             updateDisplay()
         }
 
         // Listener para o botão de igual (=)
         btnEquals.setOnClickListener {
-            if (currentNumber.isNotEmpty() && currentOperator.isNotEmpty() && previousValue != null) {
-                performCalculation()
-                currentOperator = ""
-            }
+            performCalculation()
+            currentOperator = ""
         }
 
         // Listener para o botão de ponto decimal (.)
@@ -90,12 +96,21 @@ class MainActivity : AppCompatActivity() {
                 updateDisplay()
             }
         }
+
+        // Iniciar o runnable para trocar as imagens a cada 2 segundos
+        val handler = Handler()
+        val imageChangeRunnable = object : Runnable {
+            override fun run() {
+                currentImageIndex = (currentImageIndex + 1) % imageList.size
+                imageView.setImageResource(imageList[currentImageIndex])
+                handler.postDelayed(this, 5000) // Trocar a imagem a cada 2 segundos (2000 milissegundos)
+            }
+        }
+        handler.postDelayed(imageChangeRunnable, 5000) // Iniciar a troca das imagens após 2 segundos
     }
 
     private fun onOperatorButtonClick(operatorButton: Button) {
-        if (previousValue == null) {
-            previousValue = currentNumber.toString().toDouble()
-        } else {
+        if (currentNumber.isNotEmpty()) {
             performCalculation()
         }
         currentOperator = operatorButton.text.toString()
@@ -103,35 +118,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun performCalculation() {
-        val currentValue = currentNumber.toString().toDouble()
-        when (currentOperator) {
-            "+" -> previousValue = previousValue!! + currentValue
-            "-" -> previousValue = previousValue!! - currentValue
-            "*" -> previousValue = previousValue!! * currentValue
-            "/" -> {
-                if (currentValue != 0.0) {
-                    previousValue = previousValue!! / currentValue
-                } else {
-                    displayTextView.text = "Erro"
-                    return
+        if (currentOperator.isNotEmpty() && currentNumber.isNotEmpty()) {
+            val currentValue = currentNumber.toString().toDouble()
+            when (currentOperator) {
+                "+" -> previousValue += currentValue
+                "-" -> previousValue -= currentValue
+                "*" -> previousValue *= currentValue
+                "/" -> {
+                    if (currentValue != 0.0) {
+                        previousValue /= currentValue
+                    } else {
+                        displayTextView.text = "Error"
+                        return
+                    }
                 }
             }
+            currentNumber.clear()
+            // Formatar o resultado para exibir apenas duas casas decimais (ou sem casas decimais se for um número inteiro)
+            val formattedResult = if (previousValue.isWholeNumber()) {
+                previousValue.toInt().toString()
+            } else {
+                String.format("%.2f", previousValue)
+            }
+            currentNumber.append(formattedResult)
+            updateDisplay()
         }
-        currentNumber.clear()
-        // Formatar o resultado para exibir apenas duas casas decimais (ou sem casas decimais se for um número inteiro)
-        val formattedResult = if (previousValue!!.isWholeNumber()) {
-            previousValue!!.toInt().toString()
-        } else {
-            String.format("%.2f", previousValue)
-        }
-        currentNumber.append(formattedResult)
-        updateDisplay()
     }
 
     private fun updateDisplay() {
         displayTextView.text = currentNumber.toString()
     }
-}
 
-// Função de extensão para verificar se um Double é um número inteiro
-fun Double.isWholeNumber() = this % 1.0 == 0.0
+    // Função de extensão para verificar se um Double é um número inteiro
+    private fun Double.isWholeNumber() = this % 1.0 == 0.0
+}

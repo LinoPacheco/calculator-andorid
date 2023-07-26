@@ -25,33 +25,33 @@
 
         <!-- Botões numéricos -->
         <Button
-            android:id="@+id/btn1"
+            android:id="@+id/btn7"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="1" />
+            android:text="7" />
 
         <Button
-            android:id="@+id/btn2"
+            android:id="@+id/btn8"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="2" />
+            android:text="8" />
 
         <Button
-            android:id="@+id/btn3"
+            android:id="@+id/btn9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="3" />
+            android:text="9" />
 
-        <!-- Botão de adição -->
+        <!-- Botão de divisão -->
         <Button
-            android:id="@+id/btnAdd"
+            android:id="@+id/btnDivide"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="+" />
+            android:text="/" />
     </LinearLayout>
 
     <!-- Linha de botões -->
@@ -83,6 +83,44 @@
             android:layout_weight="1"
             android:text="6" />
 
+        <!-- Botão de multiplicação -->
+        <Button
+            android:id="@+id/btnMultiply"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="*" />
+    </LinearLayout>
+
+    <!-- Linha de botões -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
+
+        <!-- Botões numéricos -->
+        <Button
+            android:id="@+id/btn1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="1" />
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="2" />
+
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="3" />
+
         <!-- Botão de subtração -->
         <Button
             android:id="@+id/btnSubtract"
@@ -101,41 +139,11 @@
 
         <!-- Botões numéricos -->
         <Button
-            android:id="@+id/btn7"
+            android:id="@+id/btn0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="7" />
-
-        <Button
-            android:id="@+id/btn8"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="8" />
-
-        <Button
-            android:id="@+id/btn9"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="9" />
-
-        <!-- Botão de multiplicação -->
-        <Button
-            android:id="@+id/btnMultiply"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="*" />
-    </LinearLayout>
-
-    <!-- Linha de botões -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginBottom="8dp">
+            android:text="0" />
 
         <!-- Botão de ponto decimal -->
         <Button
@@ -145,13 +153,6 @@
             android:layout_weight="1"
             android:text="." />
 
-        <Button
-            android:id="@+id/btn0"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="0" />
-
         <!-- Botão de igual -->
         <Button
             android:id="@+id/btnEquals"
@@ -160,13 +161,13 @@
             android:layout_weight="1"
             android:text="=" />
 
-        <!-- Botão de divisão -->
+        <!-- Botão de adição -->
         <Button
-            android:id="@+id/btnDivide"
+            android:id="@+id/btnAdd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="/" />
+            android:text="+" />
     </LinearLayout>
 
     <!-- Botão Clear -->
@@ -181,14 +182,18 @@
         android:textColor="#FFFFFF"
         android:layout_marginBottom="8dp" />
 
-    <!-- activity_main.xml -->
-    <ImageView
+    <!-- Exibição das imagens -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/background_image"
-        android:scaleType="centerCrop"
-        android:contentDescription="@null" />
+        android:layout_height="wrap_content">
 
+        <!-- ImageView para exibir as imagens -->
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
+    </RelativeLayout>
 
 </LinearLayout>
