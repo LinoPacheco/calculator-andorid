@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 if (currentValue != 0.0) {
                     previousValue = previousValue!! / currentValue
                 } else {
-                    displayTextView.text = "Error"
+                    displayTextView.text = "Erro"
                     return
                 }
             }
