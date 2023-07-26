@@ -12,7 +12,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var displayTextView: TextView
     private var currentNumber = StringBuilder()
-    private var operatorList = mutableListOf<Pair<String, Double>>()
+    private var currentOperator = ""
+    private var previousValue: Double? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,20 +57,26 @@ class MainActivity : AppCompatActivity() {
         // Definir os listeners para os botões de operadores
         operatorButtons.forEach { button ->
             button.setOnClickListener {
-                onOperatorButtonClick(button)
+                if (currentNumber.isNotEmpty()) {
+                    onOperatorButtonClick(button)
+                }
             }
         }
 
         // Listener para o botão de limpar (Clear)
         btnClear.setOnClickListener {
             currentNumber.clear()
-            operatorList.clear()
+            currentOperator = ""
+            previousValue = null
             updateDisplay()
         }
 
         // Listener para o botão de igual (=)
         btnEquals.setOnClickListener {
-            calculateResult()
+            if (currentNumber.isNotEmpty() && currentOperator.isNotEmpty() && previousValue != null) {
+                performCalculation()
+                currentOperator = ""
+            }
         }
 
         // Listener para o botão de ponto decimal (.)
@@ -86,50 +93,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onOperatorButtonClick(operatorButton: Button) {
-        if (currentNumber.isNotEmpty()) {
-            val operator = operatorButton.text.toString()
-            val number = currentNumber.toString().toDouble()
-            operatorList.add(Pair(operator, number))
-            currentNumber.clear()
+        if (previousValue == null) {
+            previousValue = currentNumber.toString().toDouble()
+        } else {
+            performCalculation()
         }
+        currentOperator = operatorButton.text.toString()
+        currentNumber.clear()
     }
 
-    private fun calculateResult() {
-        if (currentNumber.isNotEmpty()) {
-            operatorList.add(Pair("", currentNumber.toString().toDouble()))
-            currentNumber.clear()
-        }
-        if (operatorList.isNotEmpty()) {
-            var result = operatorList[0].second
-            for (i in 1 until operatorList.size) {
-                val operator = operatorList[i].first
-                val number = operatorList[i].second
-                when (operator) {
-                    "+" -> result += number
-                    "-" -> result -= number
-                    "*" -> result *= number
-                    "/" -> {
-                        if (number != 0.0) {
-                            result /= number
-                        } else {
-                            displayTextView.text = "Error"
-                            return
-                        }
-                    }
+    private fun performCalculation() {
+        val currentValue = currentNumber.toString().toDouble()
+        when (currentOperator) {
+            "+" -> previousValue = previousValue!! + currentValue
+            "-" -> previousValue = previousValue!! - currentValue
+            "*" -> previousValue = previousValue!! * currentValue
+            "/" -> {
+                if (currentValue != 0.0) {
+                    previousValue = previousValue!! / currentValue
+                } else {
+                    displayTextView.text = "Error"
+                    return
                 }
             }
-            // Format the result to remove decimal if it's an integer value
-            val formattedResult = if (result % 1 == 0.0) {
-                result.toLong().toString()
-            } else {
-                result.toString()
-            }
-            displayTextView.text = formattedResult
-            operatorList.clear()
         }
+        currentNumber.clear()
+        // Formatar o resultado para exibir apenas duas casas decimais (ou sem casas decimais se for um número inteiro)
+        val formattedResult = if (previousValue!!.isWholeNumber()) {
+            previousValue!!.toInt().toString()
+        } else {
+            String.format("%.2f", previousValue)
+        }
+        currentNumber.append(formattedResult)
+        updateDisplay()
     }
 
     private fun updateDisplay() {
         displayTextView.text = currentNumber.toString()
     }
 }
+
+// Função de extensão para verificar se um Double é um número inteiro
+fun Double.isWholeNumber() = this % 1.0 == 0.0
